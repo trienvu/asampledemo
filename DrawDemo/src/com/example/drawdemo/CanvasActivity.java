@@ -12,27 +12,29 @@ import android.widget.LinearLayout;
 
 public class CanvasActivity extends Activity {
 	private Context mContext = this;
-	private Paint mPaint;
 	private LinearLayout mLlRect;
+	private Paint mPaint;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_canvas);
 
-		this.mLlRect = (LinearLayout) this.findViewById(R.id.llRect);
+		setContentView(R.layout.activity_canvas);
+		// find view
+		mLlRect = (LinearLayout) this.findViewById(R.id.llRect);
+
 		init();
 	}
 
 	@SuppressWarnings("deprecation")
 	private void init() {
 		mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		mPaint.setColor(Color.parseColor("#356452"));
-
-		Bitmap bitmap = Bitmap.createBitmap(400, 800, Bitmap.Config.ARGB_8888);
+		mPaint.setColor(Color.BLACK);
+		
+		Bitmap bitmap = Bitmap.createBitmap(400, 500, Bitmap.Config.ARGB_8888);
 		Canvas canvas = new Canvas(bitmap);
-
 		canvas.drawRect(50, 50, 200, 200, mPaint);
-		mLlRect.setBackgroundDrawable(new BitmapDrawable(bitmap));
+		
+		mLlRect.setBackgroundDrawable(new BitmapDrawable(mContext.getResources(), bitmap));
 	}
 }
