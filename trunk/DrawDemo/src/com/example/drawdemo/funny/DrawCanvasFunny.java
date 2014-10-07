@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup.LayoutParams;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.drawdemo.R;
 
@@ -30,11 +31,11 @@ public class DrawCanvasFunny extends Activity implements OnTouchListener {
 
 	private void init() {
 		MyCustomPanel view = new MyCustomPanel(mContext);
-		view.setOnTouchListener(this);
 		ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
 				LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
 		addContentView(view, params);
 		view.setDrawingCacheEnabled(true);
+		view.setOnTouchListener(this);
 		bitmap = view.getDrawingCache();
 	}
 
@@ -53,8 +54,17 @@ public class DrawCanvasFunny extends Activity implements OnTouchListener {
 			mPaint.setColor(Color.GREEN);
 			mPaint.setStrokeWidth(6);
 
+			mPaint.setColor(Color.RED);
+			canvas.drawCircle(50 / 2, 50 / 2, 3, mPaint);
+
 			if (bitmap != null) {
 				bitmap.setPixel((int) x, (int) y, Color.RED);
+
+				/*
+				 * Toast.makeText(mContext, "x:" + x + " - y:" + y,
+				 * Toast.LENGTH_SHORT).show();
+				 */
+
 				canvas.drawBitmap(bitmap, x, y, mPaint);
 			}
 
@@ -64,12 +74,17 @@ public class DrawCanvasFunny extends Activity implements OnTouchListener {
 
 	@Override
 	public boolean onTouch(View v, MotionEvent event) {
-		x = event.getX();
-		y = event.getY();
+		int eventaction = event.getAction();
+		if (eventaction == MotionEvent.ACTION_DOWN) {
+			x = event.getX();
+			y = event.getY();
 
-		bitmap = v.getDrawingCache();
-		v.invalidate();
-		
+			bitmap = v.getDrawingCache();
+			v.invalidate();
+			v.requestLayout();
+
+		}
+
 		return true;
 	}
 }
