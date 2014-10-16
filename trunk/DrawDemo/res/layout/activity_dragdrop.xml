@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This file is res/layout/main.xml -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#0000ff" >
+
+    <LinearLayout
+        android:id="@+id/counters"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/top"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_marginBottom="30dp"
+            android:layout_marginTop="30dp"
+            android:background="#111111"
+            android:padding="10dp"
+            android:text="0" />
+
+        <TextView
+            android:id="@+id/middle"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_marginBottom="30dp"
+            android:background="#111111"
+            android:padding="10dp"
+            android:text="0" />
+
+        <TextView
+            android:id="@+id/bottom"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:background="#111111"
+            android:padding="10dp"
+            android:text="0" />
+    </LinearLayout>
+
+    <com.androidbook.touch.dragdemo.Dot
+        android:id="@+id/dot"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" />
+
+</FrameLayout>
