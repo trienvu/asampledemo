@@ -1,5 +1,7 @@
 package com.example.drawdemo.surface;
 
+import java.util.List;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -8,6 +10,8 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
+import android.graphics.PorterDuff.Mode;
+import android.graphics.Rect;
 import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -21,9 +25,7 @@ public class BubbeThreadSurfaceView extends SurfaceView implements
 	private BubbeThread bubbeThread;
 	private SurfaceHolder mSurfaceHolder;
 	private float x = 50, y = 50;
-	private static boolean  isInitialized = false, isTouch = false;
 	private Bitmap mBitmap;
-	private Paint mPaint;
 
 	public BubbeThreadSurfaceView(Context context) {
 		super(context);
@@ -45,23 +47,12 @@ public class BubbeThreadSurfaceView extends SurfaceView implements
 		mBitmap = BitmapFactory.decodeResource(getResources(),
 				R.drawable.ic_launcher);
 
-		mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		mPaint.setColor(Color.RED);
-		mPaint.setStyle(Style.FILL);
+		setWillNotDraw(false); // Allows us to use invalidate() to call onDraw()
 
 		bubbeThread = new BubbeThread(holder, mContext, new Handler());
 		bubbeThread.setRunning(true);
 		bubbeThread.start();
 	}
-
-	/*@Override
-	protected void onDraw(Canvas canvas) {
-		super.onDraw(canvas);
-		canvas.drawColor(Color.WHITE);
-		canvas.drawBitmap(mBitmap, this.getWidth() / 2, this.getHeight() / 2,
-				mPaint);
-		canvas.save();
-	}*/
 
 	@Override
 	public void surfaceChanged(SurfaceHolder holder, int format, int width,
@@ -87,7 +78,6 @@ public class BubbeThreadSurfaceView extends SurfaceView implements
 	private class BubbeThread extends Thread {
 
 		private final Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-
 		private int canvasWidth = 200;
 		private int canvasHeight = 400;
 		private static final int SPEED = 2;
@@ -98,6 +88,9 @@ public class BubbeThreadSurfaceView extends SurfaceView implements
 		private float headingX;
 		private float headingY;
 		private SurfaceHolder mSurfaceHolder;
+		private List<Rect> lstDirtyRect;
+		private float top, bottom, left, right;
+		Rect mDirtRect;
 
 		public BubbeThread(SurfaceHolder surfaceHolder, Context context,
 				Handler handler) {
@@ -124,15 +117,9 @@ public class BubbeThreadSurfaceView extends SurfaceView implements
 			while (running) {
 				Canvas canvas = null;
 				try {
-					canvas = mSurfaceHolder.lockCanvas();
+					canvas = mSurfaceHolder.lockCanvas(mDirtRect);
 					synchronized (mSurfaceHolder) {
-						if (!isInitialized) {							
-							//BubbeThreadSurfaceView.this.onDraw(canvas);
-							//doDraw(canvas);
-							isInitialized = true;
-						} else if (isInitialized && isTouch) {
-							doTouchDraw(canvas);
-						}
+						doDraw(canvas);
 					}
 				} catch (Exception e) {
 				}
@@ -161,24 +148,25 @@ public class BubbeThreadSurfaceView extends SurfaceView implements
 		public void doDraw(Canvas canvas) {
 			bubbleX = bubbleX + (headingX * SPEED);
 			bubbleY = bubbleY + (headingY * SPEED);
-			// canvas.drawColor(Color.WHITE);
-			canvas.drawCircle(bubbleX, bubbleX, 20, mPaint);
-			isInitialized = true;
-		}
 
-		public void doTouchDraw(Canvas canvas) {
-			canvas.drawCircle(x, y, 10, mPaint);
-			isTouch = false;
+			// canvas.drawCircle(bubbleX, bubbleX, 20, mPaint);
+			// canvas.drawColor(Color.WHITE, Mode.CLEAR);
+			// canvas.drawColor(Color.WHITE);
+			canvas.drawBitmap(mBitmap, x, y, mPaint);
+			mDirtRect = new Rect((int) x, (int) y,
+					(int) (x + mBitmap.getWidth()),
+					(int) (y + mBitmap.getHeight()));
 		}
 	}
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
+
 		int action = event.getAction();
 		if (action == MotionEvent.ACTION_DOWN) {
 			x = event.getX();
 			y = event.getY();
-			isTouch = true;
+
 		}
 		return true;
 	}
